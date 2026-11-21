@@ -26,3 +26,14 @@ Amber "COMMUNICATION BLACKOUT APPROACHING" (time, duration, reconnection point, 
 - Vitest tests for engine: LOS blocked/clear on known grid, A* respects slope limit, recommendation never picks unsafe route, queue sends P1 first and FIFO within priority, item not removed before ACK.
 - Per-route head() metadata; AGENTS.md records engine/UI separation.
 - Honest copy: "synthetic terrain", "simplified geometric line-of-sight (no diffraction/Fresnel/link budget)", "local simulation".
+
+## Refined engineering constraints
+- **Terrain model**: elevations in metres; terrain object stores `resolutionM` (metres per cell), origin, width/height, units, and `source: "synthetic" | "uploaded-dem"` with name. UI badge always shows which source is active; uploads validated (rectangular, numeric, finite) with clear errors.
+- **LOS**: sample the full rover-to-endpoint segment at sub-cell spacing (≤ resolution/2, both endpoints included) with bilinear interpolation; ray runs from rover ground + rover antenna height to endpoint ground + endpoint antenna height. Returns every obstruction (distance along segment, x/y, terrain elevation, ray height, clearance) plus the worst one; shown on the cross-section.
+- **Safety**: max slope is a hard constraint in both A* runs (edges over the limit are impassable). Recommendation only considers routes whose max slope ≤ limit; if none, shows "no valid route".
+- **Route B**: A* cost includes a communication-obstruction penalty computed by running LOS at each candidate node during search (cached per cell). Route A uses distance + slope/energy only.
+- **Blackout duration**: along-route distance from first BLOCKED sample to first subsequent CLEAR sample, divided by rover speed. If no reconnection before route end, marked "no reconnection within planned route" with duration as lower bound to destination.
+- **Recalculation**: all derived values (route metrics, LOS, predictions, warning times, continuity status) are memoised selectors over route + settings + terrain, so any change recomputes them.
+- **Determinism**: seeded PRNG for terrain, demo scenarios, data generation and ACK failures; each demo resets to a fixed seed and state.
+- **Tests (Vitest)**: terrain sampling (bilinear, bounds, units), LOS obstruction location/elevation, route safety on both routes, Route B penalty changes path vs A, blackout transitions + no-reconnection case, priority/FIFO transmission and no deletion before ACK.
+- Scope unchanged: no ML, no backend, no required APIs, no NASA connectivity.
