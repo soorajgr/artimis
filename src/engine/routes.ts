@@ -22,7 +22,7 @@ export interface RouteSummary {
   id: RouteId;
   label: string;
   found: boolean;
-  reason?: string;
+  reason?: string | undefined;
   safe: boolean;
   cells: Point[];
   points: RoutePoint[];
