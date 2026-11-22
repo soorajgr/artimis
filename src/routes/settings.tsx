@@ -13,6 +13,7 @@ export const Route = createFileRoute("/settings")({
 function SettingsView() {
   const settings = useMissionStore((s) => s.settings);
   const setSettings = useMissionStore((s) => s.setSettings);
+  const resetMission = useMissionStore((s) => s.resetMission);
 
   const handleReset = () => {
     setSettings(defaultSettings);
@@ -24,9 +25,14 @@ function SettingsView() {
         title="Simulation Parameters & Calibration"
         description="Configure antenna geometry, safety thresholds, kinematics, and store-and-forward constraints"
         action={
-          <Button variant="outline" size="sm" onClick={handleReset} className="text-xs">
-            <RotateCcw size={14} className="mr-1.5" /> Reset to Baseline Defaults
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handleReset} className="text-xs">
+              <RotateCcw size={14} className="mr-1.5" /> Reset Parameters
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => resetMission()} className="text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
+              <RotateCcw size={14} className="mr-1.5" /> Reset Mission State
+            </Button>
+          </div>
         }
       />
 

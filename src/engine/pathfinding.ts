@@ -103,6 +103,20 @@ export function planRoute(t: Terrain, start: Point, goal: Point, opts: PlanOptio
       const dz = (t.elevation[ni] ?? 0) - ce;
       const slope = (Math.atan(Math.abs(dz) / run) * 180) / Math.PI;
       if (slope > opts.maxSlopeDeg) continue;
+      // Prevent corner-cutting across impassable orthogonal terrain
+      if (dx !== 0 && dy !== 0) {
+        const o1i = cy * w + (cx + dx);
+        const o2i = (cy + dy) * w + cx;
+        const e1 = t.elevation[o1i] ?? 0;
+        const e2 = t.elevation[o2i] ?? 0;
+        const s1 = (Math.atan(Math.abs(e1 - ce) / t.resolutionM) * 180) / Math.PI;
+        const s2 = (Math.atan(Math.abs(e2 - ce) / t.resolutionM) * 180) / Math.PI;
+        const s1_n = (Math.atan(Math.abs((t.elevation[ni] ?? 0) - e1) / t.resolutionM) * 180) / Math.PI;
+        const s2_n = (Math.atan(Math.abs((t.elevation[ni] ?? 0) - e2) / t.resolutionM) * 180) / Math.PI;
+        if (s1 > opts.maxSlopeDeg || s2 > opts.maxSlopeDeg || s1_n > opts.maxSlopeDeg || s2_n > opts.maxSlopeDeg) {
+          continue;
+        }
+      }
       let cost = run * (1 + (0.5 * slope) / Math.max(opts.maxSlopeDeg, 1)) + Math.max(dz, 0) * 2;
       if (opts.commAware && blocked(nx, ny)) cost += run * opts.commPenalty;
       const ng = (g[cur] ?? Infinity) + cost;

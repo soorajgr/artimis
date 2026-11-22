@@ -64,6 +64,7 @@ export interface TxResult {
   events: TxEvent[];
   rngState: number;
   sentKB: number;
+  interruptedKB: number;
 }
 
 /**
@@ -74,10 +75,19 @@ export function transmitStep(queue: DataItem[], budgetKB: number, linkClear: boo
   const events: TxEvent[] = [];
   let rng = rngState;
   if (!linkClear) {
-    const q = queue.map((i) =>
-      i.status === "transmitting" || i.status === "awaiting-ack" ? { ...i, status: "retry" as const, sentKB: 0, attempts: i.attempts + 1 } : i,
-    );
-    return { queue: q, delivered: [], events, rngState: rng, sentKB: 0 };
+    let interruptedKB = 0;
+    const q = queue.map((i) => {
+      if (i.status === "transmitting" || i.status === "awaiting-ack") {
+        interruptedKB += i.sentKB;
+        events.push({
+          level: "warn",
+          msg: `Transmission interrupted by blackout · ${i.id} (${i.sentKB} KB) reset for retry`,
+        });
+        return { ...i, status: "retry" as const, sentKB: 0, attempts: i.attempts + 1 };
+      }
+      return i;
+    });
+    return { queue: q, delivered: [], events, rngState: rng, sentKB: 0, interruptedKB };
   }
   const delivered: DataItem[] = [];
   let q: DataItem[] = [];
@@ -106,5 +116,5 @@ export function transmitStep(queue: DataItem[], budgetKB: number, linkClear: boo
     const sentKB = i.sentKB + chunk;
     q[k] = { ...i, sentKB, status: sentKB >= i.sizeKB ? "awaiting-ack" : "transmitting" };
   }
-  return { queue: q, delivered, events, rngState: rng, sentKB: sent };
+  return { queue: q, delivered, events, rngState: rng, sentKB: sent, interruptedKB: 0 };
 }

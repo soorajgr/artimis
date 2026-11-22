@@ -7,6 +7,8 @@ import { nextBlackout, positionAt } from '@/engine/prediction';
 import { generateData, initialSimulation, stepSimulation, type SimulationSettings, type SimulationState } from '@/engine/simulation';
 import type { DataType } from '@/engine/queue';
 
+import { clearMissionState } from './persistence';
+
 export const defaultSettings: SimulationSettings = { start: {x:30,y:10}, destination:{x:30,y:72}, endpoint:{x:72,y:40}, roverAntennaM:2, endpointAntennaM:10, roverSpeedMps:0.5, maxSlopeDeg:20, commPenalty:3, warningS:180, txRateKBps:32, capacityKB:32768, simSpeed:20 };
 const terrain = generateSyntheticTerrain();
 const makeRoutes = (t: Terrain, s: SimulationSettings) => ({ A: buildRoute(t,'A',s), B: buildRoute(t,'B',s) });
@@ -25,7 +27,7 @@ export function demoState(id: DemoId, t: Terrain, settings: SimulationSettings):
 interface MissionStore {
  terrain: Terrain; settings: SimulationSettings; routes: Record<RouteId,RouteSummary>; selected: RouteId; sim: SimulationState; hydrated: boolean;
  setSettings: (patch: Partial<SimulationSettings>)=>void; setTerrain:(t:Terrain)=>void; select:(id:RouteId)=>void;
- toggle:()=>void; reset:()=>void; tick:(dt:number)=>void; generate:(type:DataType)=>void; setAuto:(auto:boolean)=>void; demo:(id:DemoId)=>void;
+ toggle:()=>void; reset:()=>void; resetMission:()=>Promise<void>; tick:(dt:number)=>void; generate:(type:DataType)=>void; setAuto:(auto:boolean)=>void; demo:(id:DemoId)=>void;
 }
 export const useMissionStore = create<MissionStore>((set,get)=>({
  terrain,settings:defaultSettings,routes:makeRoutes(terrain,defaultSettings),selected:'A',sim:initialSimulation(),hydrated:false,
@@ -34,6 +36,11 @@ export const useMissionStore = create<MissionStore>((set,get)=>({
  select:selected=>set(s=>({selected,sim:{...s.sim,progressM:0,running:false,restored:false}})),
  toggle:()=>set(s=>({sim:{...s.sim,running:!s.sim.running,events:[...s.sim.events,{time:s.sim.timeS,level:'info',msg:s.sim.running?'Simulation paused':'Simulation started'}]}})),
  reset:()=>set({sim:initialSimulation()}),
+ resetMission: async ()=>{
+   await clearMissionState();
+   const syn = generateSyntheticTerrain();
+   set({terrain:syn,settings:defaultSettings,routes:makeRoutes(syn,defaultSettings),selected:'A',sim:initialSimulation()});
+ },
  tick:dt=>{const s=get();if(s.sim.running&&s.hydrated)set({sim:stepSimulation(s.sim,s.terrain,s.routes[s.selected],s.settings,dt)});},
  generate:type=>set(s=>({sim:generateData(s.sim,type,s.settings.capacityKB)})),
  setAuto:autoGenerate=>set(s=>({sim:{...s.sim,autoGenerate}})),

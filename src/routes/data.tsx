@@ -67,7 +67,7 @@ function DataContinuity() {
         <Stat
           label="DELIVERED & ACKED"
           value={`${m.sim.deliveredCount}`}
-          detail={`${bytes(m.sim.deliveredKB)} total telemetry received`}
+          detail={`${bytes(m.sim.deliveredKB)} acked · ${bytes(m.sim.wastedKB ?? 0)} retried`}
           icon={<CheckCircle2 size={16} />}
           tone="text-success"
         />
