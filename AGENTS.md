@@ -1,30 +1,12 @@
-<!-- LOVABLE:BEGIN -->
-> [!IMPORTANT]
-> This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
-> published git history — force pushing, or rebasing/amending/squashing commits
-> that are already pushed — as it rewrites history on Lovable's side and the
-> user will likely lose their project history.
->
-> Commits you push to the connected branch sync back to Lovable and show up in
-> the editor, so keep the branch in a working state.
+# Agent Guidelines — ARTEMIS
 
-## What Lovable manages
+## Project Architecture
+- **Framework:** TanStack Start / React 19 / Vite / Tailwind CSS 4.
+- **Routing:** TanStack Router typed file-based routing (`src/routes/`).
+- **State:** Zustand store (`src/state/mission.ts`) with IndexedDB (`idb-keyval`) local persistence.
+- **Engine:** Pure deterministic geometric algorithms in `src/engine/` (LOS, A* pathfinding, prediction, priority queue).
 
-Rules outside this block are the project's own. Change the pieces below in
-Lovable, not by hand. With the [Lovable MCP](https://mcp.lovable.dev)
-connected, `send_message` asks Lovable to do it; otherwise ask the user to
-use the editor.
-
-- **Database.** Do not add or edit `supabase/migrations/` or `drizzle/`.
-  Ask Lovable to change the schema.
-- **Generated files.** Do not edit a file whose header says it is automatically
-  generated.
-- **AI gateway.** Keep model calls on Lovable's gateway, and keep
-  `LOVABLE_API_KEY` out of browser code.
-- **Connectors.** Lovable provides native connectors. `list_connectors` shows
-  which are enabled; `add_connector` only returns the dashboard link. When a
-  connector is enabled, calls go through the connector gateway and need
-  `LOVABLE_API_KEY`. When Lovable does not provide one, users can bring their
-  own key and store it in Secrets.
-- **Secrets.** Lovable manages them. Do not put secret values in the repo.
-<!-- LOVABLE:END -->
+## Invariants
+1. Do not introduce machine-learning or pseudo-AI claims. All calculations are physical and geometric.
+2. Maintain terrain safety limits ($\le 20^\circ$ slope) as a strict hard constraint.
+3. Keep Store-and-Forward data buffering active continuously across all traverse states.
