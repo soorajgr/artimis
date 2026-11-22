@@ -1,0 +1,16 @@
+{
+  "name": "ARTEMIS | Lunar Shadow & Communication Blackout Predictor",
+  "short_name": "ARTEMIS",
+  "description": "Terrain-Aware Lunar Communication Blackout Prediction & Data Continuity System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0f18",
+  "theme_color": "#00e5ff",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
