@@ -6,6 +6,9 @@ import { nitro } from "nitro/vite";
 import path from "node:path";
 
 export default defineConfig({
+  server: {
+    port: 8080,
+  },
   plugins: [
     tanstackStart({
       server: { entry: "server" },
