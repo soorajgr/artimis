@@ -1,1 +1,4 @@
-- [ ] Build ARTEMIS per approved plan incl. refined engineering constraints
+- [ ] Validate calculation engine and delivery confirmation
+- [ ] Build mission shell, dashboard, terrain explorer and route planner
+- [ ] Build blackout prediction, data continuity, analytics, settings and deterministic demos
+- [ ] Verify simulation, persistence, uploads and desktop/mobile screens

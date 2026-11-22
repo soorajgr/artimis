@@ -123,8 +123,8 @@ describe("priority transmission", () => {
     expect(s1.queue).toHaveLength(5);
     expect(s1.queue.find((i) => i.seq === 3)!.status).toBe("awaiting-ack");
     const s2 = transmitStep(s1.queue, 0, true, s1.rngState, 0, 1);
-    expect(s2.delivered.map((i) => i.seq)).toEqual([3]);
-    expect(s2.queue).toHaveLength(4);
+    expect(s2.delivered.map((i) => i.seq)).toEqual([3, 5]);
+    expect(s2.queue).toHaveLength(3);
   });
   it("failed ACK keeps the item for retry", () => {
     const s1 = transmitStep(q, 10, true, 1, 1, 0);

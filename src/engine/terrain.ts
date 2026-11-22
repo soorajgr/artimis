@@ -133,6 +133,8 @@ export class TerrainParseError extends Error {}
 export function parseTerrainFile(text: string, fileName: string, defaultResolutionM = 25): Terrain {
   let rows: unknown;
   let resolutionM = defaultResolutionM;
+  let originXM = 0;
+  let originYM = 0;
   const isJson = fileName.toLowerCase().endsWith(".json") || text.trim().startsWith("[") || text.trim().startsWith("{");
   if (isJson) {
     let data: unknown;
@@ -143,10 +145,16 @@ export function parseTerrainFile(text: string, fileName: string, defaultResoluti
     }
     if (Array.isArray(data)) rows = data;
     else if (data && typeof data === "object" && "elevation" in data) {
-      const obj = data as { elevation: unknown; resolutionM?: unknown };
+      const obj = data as { elevation: unknown; resolutionM?: unknown; originXM?: unknown; originYM?: unknown };
       rows = obj.elevation;
+      for (const key of ["originXM", "originYM"] as const) {
+        const value = obj[key];
+        if (value !== undefined && (typeof value !== "number" || !Number.isFinite(value))) throw new TerrainParseError(`${key} must be finite metres.`);
+      }
+      if (typeof obj.originXM === "number") originXM = obj.originXM;
+      if (typeof obj.originYM === "number") originYM = obj.originYM;
       if (obj.resolutionM !== undefined) {
-        if (typeof obj.resolutionM !== "number" || !(obj.resolutionM > 0)) throw new TerrainParseError("resolutionM must be a positive number (metres per cell).");
+        if (typeof obj.resolutionM !== "number" || !Number.isFinite(obj.resolutionM) || !(obj.resolutionM > 0)) throw new TerrainParseError("resolutionM must be a positive number (metres per cell).");
         resolutionM = obj.resolutionM;
       }
     } else throw new TerrainParseError('JSON must be a 2D array or an object with an "elevation" 2D array.');
@@ -157,6 +165,7 @@ export function parseTerrainFile(text: string, fileName: string, defaultResoluti
       .filter((l) => l.length > 0 && !l.startsWith("#"))
       .map((l) => l.split(/[,;\s]+/).map((v) => Number(v)));
   }
+  if (!Number.isFinite(resolutionM) || resolutionM <= 0) throw new TerrainParseError("Grid resolution must be positive finite metres.");
   if (!Array.isArray(rows) || rows.length < 8) throw new TerrainParseError("Grid must have at least 8 rows.");
   const width = Array.isArray(rows[0]) ? (rows[0] as unknown[]).length : 0;
   if (width < 8) throw new TerrainParseError("Grid must have at least 8 columns.");
@@ -173,8 +182,8 @@ export function parseTerrainFile(text: string, fileName: string, defaultResoluti
     width,
     height: rows.length,
     resolutionM,
-    originXM: 0,
-    originYM: 0,
+    originXM,
+    originYM,
     units: "m",
     source: "uploaded-dem",
     name: fileName,

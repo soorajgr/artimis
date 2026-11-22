@@ -97,7 +97,8 @@ export function transmitStep(queue: DataItem[], budgetKB: number, linkClear: boo
   let sent = 0;
   q = orderQueue(q);
   for (let k = 0; k < q.length && budget > 0; k++) {
-    const i = q[k]!;
+    const i = q[k];
+    if (!i) continue;
     if (i.status === "awaiting-ack") continue;
     const chunk = Math.min(budget, i.sizeKB - i.sentKB);
     budget -= chunk;
