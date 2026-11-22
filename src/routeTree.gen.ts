@@ -10,33 +10,128 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as BlackoutRouteImport } from './routes/blackout'
+import { Route as DataRouteImport } from './routes/data'
+import { Route as DemoRouteImport } from './routes/demo'
+import { Route as RoutesRouteImport } from './routes/routes'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as TerrainRouteImport } from './routes/terrain'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlackoutRoute = BlackoutRouteImport.update({
+  id: '/blackout',
+  path: '/blackout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DataRoute = DataRouteImport.update({
+  id: '/data',
+  path: '/data',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoRoute = DemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoutesRoute = RoutesRouteImport.update({
+  id: '/routes',
+  path: '/routes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TerrainRoute = TerrainRouteImport.update({
+  id: '/terrain',
+  path: '/terrain',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/blackout': typeof BlackoutRoute
+  '/data': typeof DataRoute
+  '/demo': typeof DemoRoute
+  '/routes': typeof RoutesRoute
+  '/settings': typeof SettingsRoute
+  '/terrain': typeof TerrainRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/blackout': typeof BlackoutRoute
+  '/data': typeof DataRoute
+  '/demo': typeof DemoRoute
+  '/routes': typeof RoutesRoute
+  '/settings': typeof SettingsRoute
+  '/terrain': typeof TerrainRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/blackout': typeof BlackoutRoute
+  '/data': typeof DataRoute
+  '/demo': typeof DemoRoute
+  '/routes': typeof RoutesRoute
+  '/settings': typeof SettingsRoute
+  '/terrain': typeof TerrainRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/analytics'
+    | '/blackout'
+    | '/data'
+    | '/demo'
+    | '/routes'
+    | '/settings'
+    | '/terrain'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/analytics'
+    | '/blackout'
+    | '/data'
+    | '/demo'
+    | '/routes'
+    | '/settings'
+    | '/terrain'
+  id:
+    | '__root__'
+    | '/'
+    | '/analytics'
+    | '/blackout'
+    | '/data'
+    | '/demo'
+    | '/routes'
+    | '/settings'
+    | '/terrain'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  BlackoutRoute: typeof BlackoutRoute
+  DataRoute: typeof DataRoute
+  DemoRoute: typeof DemoRoute
+  RoutesRoute: typeof RoutesRoute
+  SettingsRoute: typeof SettingsRoute
+  TerrainRoute: typeof TerrainRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +143,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blackout': {
+      id: '/blackout'
+      path: '/blackout'
+      fullPath: '/blackout'
+      preLoaderRoute: typeof BlackoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/data': {
+      id: '/data'
+      path: '/data'
+      fullPath: '/data'
+      preLoaderRoute: typeof DataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/routes': {
+      id: '/routes'
+      path: '/routes'
+      fullPath: '/routes'
+      preLoaderRoute: typeof RoutesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terrain': {
+      id: '/terrain'
+      path: '/terrain'
+      fullPath: '/terrain'
+      preLoaderRoute: typeof TerrainRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  BlackoutRoute: BlackoutRoute,
+  DataRoute: DataRoute,
+  DemoRoute: DemoRoute,
+  RoutesRoute: RoutesRoute,
+  SettingsRoute: SettingsRoute,
+  TerrainRoute: TerrainRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

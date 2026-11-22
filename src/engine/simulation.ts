@@ -25,9 +25,10 @@ export function initialSimulation(): SimulationState {
 export function generateData(s: SimulationState, type: DataType, capacityKB: number): SimulationState {
   const [rand, rngState] = nextRandom(s.rngState);
   const item = createItem(type, s.seq + 1, s.timeS, rand);
-  if (!canStore(s.queue, item, capacityKB)) return { ...s, events: [...s.events, { time: s.timeS, level: 'warn', msg: `Storage full · ${item.id} not generated` }].slice(-300) };
+  if (!canStore(s.queue, item, capacityKB)) return { ...s, events: [...s.events, { time: s.timeS, level: 'warn' as const, msg: `Storage full · ${item.id} not generated` }].slice(-300) };
+  const level: MissionEvent['level'] = item.priority === 1 ? 'warn' : 'info';
   return { ...s, rngState, seq: s.seq + 1, queue: [...s.queue, item], generatedKB: s.generatedKB + item.sizeKB,
-    events: [...s.events, { time: s.timeS, level: item.priority === 1 ? 'warn' : 'info', msg: `${item.id} queued · priority ${item.priority}` }].slice(-300) };
+    events: [...s.events, { time: s.timeS, level, msg: `${item.id} queued · priority ${item.priority}` }].slice(-300) };
 }
 export function stepSimulation(s: SimulationState, terrain: Terrain, route: RouteSummary, settings: SimulationSettings, dt: number): SimulationState {
   if (!route.found || !route.safe || !route.metrics) return { ...s, running: false };
