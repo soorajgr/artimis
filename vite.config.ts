@@ -5,6 +5,9 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { nitro } from "nitro/vite";
 import path from "node:path";
 
+// Auto-detect deployment target: defaults to "vercel" (Build Output API v3 in .vercel/output)
+const preset = process.env.NITRO_PRESET || (process.env.CF_PAGES ? "cloudflare-module" : "vercel");
+
 export default defineConfig({
   server: {
     port: 8080,
@@ -16,7 +19,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     nitro({
-      preset: "cloudflare-module",
+      preset,
     }),
   ],
   resolve: {
